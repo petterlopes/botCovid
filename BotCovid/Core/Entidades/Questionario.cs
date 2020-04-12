@@ -8,8 +8,10 @@ namespace BotCovid.Core.Entidades
     public class Questionario
     {
         public IList<Pergunta> Perguntas { get; set; }
-        public Questionario()
+        public EnumeradorDeTiposDeQuestionario TipoQuestionario {get;set;}
+        public Questionario(EnumeradorDeTiposDeQuestionario tipoQuestionario)
         {
+            TipoQuestionario = tipoQuestionario;
             Perguntas = new List<Pergunta>();
         }
     }
