@@ -1,2 +1,11 @@
 ﻿body {
 }
+input, label {
+    display: block;
+}
+#Texto {
+    height: 500px;
+    width: 500px;
+    overflow: auto;
+    white-space: pre-wrap;
+}

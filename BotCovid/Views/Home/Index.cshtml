@@ -4,13 +4,14 @@
 }
 <html>
 <head>
-    <style src="Content/estilo.css"></style>
+    <link href="~/Content/estilo.css" rel="stylesheet" type="text/css" />
     <title>Teste</title>
     <script>
         window.onload = function () {
             var botao = document.getElementById("enviar");
             var Mensagem = document.getElementById("Mensagem");
             var Usuario = document.getElementById("Usuario");
+            var Texto = document.getElementById("Texto");
             botao.addEventListener("click", function () {
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", '/Home/EnviarMensagem', true);
@@ -20,13 +21,12 @@
 
                 xhr.onreadystatechange = function () { // Chama a função quando o estado mudar.
                     if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                        // Requisição finalizada. Faça o processamento aqui.
+                        Texto.innerHTML = Texto.innerHTML + this.responseText;
                     }
                 }
                 xhr.send(JSON.stringify({ Mensagem: Mensagem.value, Usuario: Usuario.value }));
             });
         }
-
     </script>
 </head>
 <body>
@@ -37,7 +37,7 @@
     <label for="Mensagem">Mensagem:</label>
     <input name="Mensagem" id="Mensagem" />
     <label for="Texto">Texto da conversa:</label>
-    <textarea name="Texto"></textarea>
+    <div name="Texto" id="Texto"></div>
     <button name="enviar" id="enviar">enviar mensagem</button>
 </body>
 </html>
