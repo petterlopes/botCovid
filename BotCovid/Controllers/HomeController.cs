@@ -17,7 +17,7 @@ namespace BotCovid.Controllers
         }
 
         [HttpPost]
-        public JsonResult EnviarMensagem(ModelMensagem msg)
+        public JsonResult EnviarMensagem([FromBody] ModelMensagem msg)
         {
             return new JsonResult(msg);
         }
