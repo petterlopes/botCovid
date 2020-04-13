@@ -2,6 +2,42 @@
 @{
     ViewData["Title"] = "Index";
 }
-<title>Teste</title>
-<h1>HomeView</h1>
+<html>
+<head>
+    <style src="Content/estilo.css"></style>
+    <title>Teste</title>
+    <script>
+        window.onload = function () {
+            var botao = document.getElementById("enviar");
+            var Mensagem = document.getElementById("Mensagem");
+            var Usuario = document.getElementById("Usuario");
+            botao.addEventListener("click", function () {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", '/Home/EnviarMensagem', true);
 
+                // Envia a informação do cabeçalho junto com a requisição.
+                xhr.setRequestHeader("Content-Type", "application/json");
+
+                xhr.onreadystatechange = function () { // Chama a função quando o estado mudar.
+                    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                        // Requisição finalizada. Faça o processamento aqui.
+                    }
+                }
+                xhr.send(JSON.stringify({ Mensagem: Mensagem.value, Usuario: Usuario.value }));
+            });
+        }
+
+    </script>
+</head>
+<body>
+    <h1>HomeView</h1>
+
+    <label for="Usuario">Usuário:</label>
+    <input name="Usuario" id="Usuario" />
+    <label for="Mensagem">Mensagem:</label>
+    <input name="Mensagem" id="Mensagem" />
+    <label for="Texto">Texto da conversa:</label>
+    <textarea name="Texto"></textarea>
+    <button name="enviar" id="enviar">enviar mensagem</button>
+</body>
+</html>

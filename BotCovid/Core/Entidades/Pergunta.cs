@@ -3,20 +3,26 @@ using System.Linq;
 
 namespace BotCovid.Core.Entidades
 {
-    public class Pergunta
+    public abstract class Pergunta
     {
+        public int Ordem { get; private set; }
         public string Descricao { get; set; }
         public IList<Resposta> RespostasValidas { get; private set; }
         public int? IdResposta { get; set; }
-        public Resposta Resposta {get
+        public Resposta Resposta
+        {
+            get
             {
                 return RespostasValidas.FirstOrDefault(x => x.Id == IdResposta);
             }
         }
-        public Pergunta(string descricao)
+        public Pergunta(string descricao, int ordem, IList<Resposta> respostasValidas)
         {
+            Ordem = ordem;
             Descricao = descricao;
-            RespostasValidas = new List<Resposta>();
+            RespostasValidas = respostasValidas;
         }
+        public abstract bool RealizarPergunta(IList<RespostaPergunta> respostasAnteriores);
+        public abstract bool ValidarResposta(RespostaPergunta resposta);
     }
 }

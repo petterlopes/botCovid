@@ -2,7 +2,7 @@
 {
     public enum EnumeradorDeTiposDeQuestionario
     {
-        CadastroInicial = 1,
+        CadastroTriagem = 1,
         Monitoramento = 2,
     }
 }
