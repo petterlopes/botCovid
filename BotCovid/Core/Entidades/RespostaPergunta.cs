@@ -8,13 +8,11 @@ namespace BotCovid.Core.Entidades
     public class RespostaPergunta
     {
         public Pergunta Pergunta { get; set; }
-        public Resposta Resposta { get; set; }
         public string RespostaString { get; set; }
 
-        public RespostaPergunta(Pergunta pergunta, Resposta resposta, string respostaString)
+        public RespostaPergunta(Pergunta pergunta, string respostaString)
         {
             Pergunta = pergunta;
-            Resposta = resposta;
             RespostaString = respostaString;
         }
     }

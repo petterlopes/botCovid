@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BotCovid.Core.Bot;
 using BotCovid.Core.Repositorios;
 using BotCovid.Model;
 using Microsoft.AspNetCore.Http;
@@ -17,20 +18,44 @@ namespace BotCovid.Controllers
             return View();
         }
         private RepositorioDeQuestionario repositorioQuestionario;
+        private RepositorioDeUsuario repositorioUsuario;
         public HomeController()
         {
             repositorioQuestionario = new RepositorioDeQuestionario();
+            repositorioUsuario = new RepositorioDeUsuario();
         }
         [HttpPost]
         public ActionResult EnviarMensagem([FromBody] ModelMensagem msg)
         {
-            var questionarios = repositorioQuestionario.Buscar(x => x.TipoQuestionario == Core.Entidades.EnumeradorDeTiposDeQuestionario.CadastroTriagem);
-            return Content($"<b>{msg.Usuario}</b>: {msg.Mensagem}\n\n"+ @"<b>BOT</b>: Bem - vindo ao monitoramento do Covid da Brigada Militar de Caxias do Sul.
-Diariamente você receberá perguntas, e é muito importante que você responda as mensagens diariamente para acompanhamento e monitoramento dos casos suspeitos de Covid - 19 na cidade.
-As informações prestadas por meio deste canal serão de uso exclusivo da Brigada Militar e dos órgãos de saúde.
-Em caso de dúvidas acesse o link ou ligue para 190.
-Se concorda em participar, responda 1 para continuar. 😷👩‍🔬👨‍🔬" + "\n");
+            var usuario = repositorioUsuario.BuscarUsuarios(x => x.Telefone == msg.Usuario).FirstOrDefault();
+            if (usuario == null)
+            {
+                usuario = new Core.Entidades.Usuario(msg.Usuario);
+                usuario.QuestionarioAtual = repositorioQuestionario.Buscar(x => x.TipoQuestionario == Core.Entidades.EnumeradorDeTiposDeQuestionario.CadastroTriagem).FirstOrDefault();
+                repositorioUsuario.AdicionarUsuario(usuario);
+            }
+            else
+            {
+                if (usuario.PerguntaAtual != null)
+                {
+                    var resposta = new Core.Entidades.RespostaPergunta(usuario.PerguntaAtual, msg.Mensagem);
+                    if (!usuario.PerguntaAtual.ValidarResposta(resposta))
+                    {
+                        return Content($"<b>{msg.Usuario}</b>: {msg.Mensagem}\n\n" + "<b>BOT</b>: Resposta Inválida \n");
+                    }
+                    usuario.RespostasAnteriores.Add(resposta);
+                }
+                else
+                {
+                    usuario.QuestionarioAtual = repositorioQuestionario.Buscar(x => x.TipoQuestionario == Core.Entidades.EnumeradorDeTiposDeQuestionario.Monitoramento).FirstOrDefault();
+                    usuario.RespostasAnteriores.Clear();
+                }
+            }
+            var processoBot = new ProcessoBot();
+            usuario.PerguntaAtual = processoBot.BuscaProximaPergunta(usuario.QuestionarioAtual, usuario.RespostasAnteriores, msg.Mensagem);
+            var retornoBot = usuario.PerguntaAtual?.Descricao ?? "Obrigado por participar!";
+            return Content($"<b>{msg.Usuario}</b>: {msg.Mensagem}\n\n" + @"<b>BOT</b>: " + retornoBot + "\n");
         }
-        
+
     }
 }
